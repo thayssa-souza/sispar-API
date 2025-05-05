@@ -1,12 +1,12 @@
 tags:
-  - Colaborador # Categoria do endpoint
+  - Colaborador
 description: Endpoint para cadastrar um novo colaborador
 
 parameters:
   - in: body
-    name: corpo # referencia ao body da requisição
+    name: corpo
     required: true
-    schema: # Esquema do corpo da requisição
+    schema:
       type: object
       properties:
         nome:
