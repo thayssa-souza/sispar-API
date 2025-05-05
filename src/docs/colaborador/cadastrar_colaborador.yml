@@ -1,0 +1,37 @@
+tags:
+  - Colaborador # Categoria do endpoint
+description: Endpoint para cadastrar um novo colaborador
+
+parameters:
+  - in: body
+    name: corpo # referencia ao body da requisição
+    required: true
+    schema: # Esquema do corpo da requisição
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Joao da Silva
+        email:
+          type: string
+          example: joao@email.com
+        senha:
+          type: string
+          example: senha123
+        cargo:
+          type: string
+          example: Gerente de Projetos
+        salario:
+          type: number
+          example: 5000.78
+      required:
+        - nome
+        - email
+        - senha
+        - cargo
+        - salario
+responses:
+  201:
+    description: Colaborador cadastrado com sucesso
+  400:
+    description: Erro ao cadastrar o colaborador
