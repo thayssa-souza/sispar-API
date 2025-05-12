@@ -80,3 +80,18 @@ def login():
         return jsonify({'mensagem': 'Login realizado com sucesso'}), 200
     else:
         return jsonify({'mensagem': 'Credenciais inválidas'}), 401
+    
+
+@bp_colaborador.route('/deletar/<int:id_colaborador>', methods=['DELETE'])
+def deletar_colaborador(id_colaborador):
+    colaborador = db.session.execute(
+        db.select(Colaborador).where(Colaborador.id == id_colaborador)
+    ).scalar_one_or_none()
+    
+    if colaborador is None:
+        return jsonify({'erro': 'Colaborador não encontrado no sistema'}), 404
+    
+    db.session.delete(colaborador)
+    db.session.commit()
+    
+    return jsonify({'mensagem': 'Colaborador deletado com sucesso'}), 200
