@@ -17,14 +17,14 @@ def get_todos_reembolsos():
 
 @bp_reembolso.route('/get-reembolso/<int:num_prestacao>', methods=['GET'])
 def get_reembolso(num_prestacao):
-    reembolso_encontrado = db.session.execute(
+    reembolsos = db.session.execute(
         db.select(Reembolso).where(Reembolso.num_prestacao == num_prestacao)
     ).scalar_one_or_none()
 
-    if reembolso_encontrado is None:
+    if reembolsos is None:
         return jsonify({'erro': 'Reembolso não encontrado'}), 404
     
-    return jsonify(reembolso_encontrado.all_data()), 200
+    return jsonify(reembolsos.all_data()), 200
 
 
 @bp_reembolso.route('/adicionar-reembolso', methods=['POST'])
@@ -67,16 +67,16 @@ def adicionar_reembolso():
 def atualizar_dados_reembolso(id_reembolso):     
     dados_requisicao = request.get_json()
     
-    reembolso_encontrado = db.session.execute(
+    reembolsos = db.session.execute(
         db.select(Reembolso).where(Reembolso.id == id_reembolso)
     ).scalar_one_or_none()
 
-    if reembolso_encontrado is None:
+    if reembolsos is None:
         return jsonify({'erro': 'Reembolso não encontrado'}), 404
     
     for key, value in dados_requisicao.items():
-        if hasattr(reembolso_encontrado, key):
-            setattr(reembolso_encontrado, key, value)
+        if hasattr(reembolsos, key):
+            setattr(reembolsos, key, value)
 
     db.session.commit()
 
@@ -85,14 +85,14 @@ def atualizar_dados_reembolso(id_reembolso):
 
 @bp_reembolso.route('/deletar-reembolso/<int:id_reembolso>', methods=['DELETE'])
 def deletar_reembolso(id_reembolso):
-    reembolso_encontrado = db.session.execute(
+    reembolsos = db.session.execute(
         db.select(Reembolso).where(Reembolso.id == id_reembolso)
     ).scalar_one_or_none()
 
-    if reembolso_encontrado is None:
+    if reembolsos is None:
         return jsonify({'erro': 'Reembolso não encontrado'}), 404
     
-    db.session.delete(reembolso_encontrado)
+    db.session.delete(reembolsos)
     db.session.commit()
 
     return jsonify({'mensagem': 'Reembolso deletado com sucesso'}), 200
