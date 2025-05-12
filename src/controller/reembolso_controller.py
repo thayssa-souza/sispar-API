@@ -2,20 +2,32 @@ from flask import Blueprint, request, jsonify
 from src.model.reembolso_model import Reembolso
 from src.model import db
 
-bp_colaborador = Blueprint('reembolso', __name__, url_prefix='/reembolso')
+bp_reembolso = Blueprint('reembolso', __name__, url_prefix='/reembolso')
 
-@bp_colaborador.route('/todos-reembolsos', methods=['GET'])
+@bp_reembolso.route('/todos-reembolsos', methods=['GET'])
 def get_todos_reembolsos():
     reembolsos = db.session.execute(
         db.select(Reembolso) 
-    ).scalar_all()
+    ).scalars().all()
     
     reembolsos = [reembolso.all_data() for reembolso in reembolsos] 
     
     return jsonify(reembolsos), 200
 
 
-@bp_colaborador.route('/adicionar-reembolso', methods=['POST'])
+@bp_reembolso.route('/get-reembolso/<int:num_prestacao>', methods=['GET'])
+def get_reembolso(num_prestacao):
+    reembolso_encontrado = db.session.execute(
+        db.select(Reembolso).where(Reembolso.num_prestacao == num_prestacao)
+    ).scalar_one_or_none()
+
+    if reembolso_encontrado is None:
+        return jsonify({'erro': 'Reembolso não encontrado'}), 404
+    
+    return jsonify(reembolso_encontrado.all_data()), 200
+
+
+@bp_reembolso.route('/adicionar-reembolso', methods=['POST'])
 def adicionar_reembolso():
     dados_requisicao = request.get_json()
     
@@ -51,7 +63,7 @@ def adicionar_reembolso():
     return jsonify({'mensagem': 'Reembolso adicionado com sucesso'}), 201
 
 
-@bp_colaborador.route('/atualizar-reembolso/<int:id_reembolso>', methods=['PUT'])
+@bp_reembolso.route('/atualizar-reembolso/<int:id_reembolso>', methods=['PUT'])
 def atualizar_dados_reembolso(id_reembolso):     
     dados_requisicao = request.get_json()
     
@@ -69,3 +81,18 @@ def atualizar_dados_reembolso(id_reembolso):
     db.session.commit()
 
     return jsonify({'mensagem': 'Dados do reembolso atualizados com sucesso'}), 200
+
+
+@bp_reembolso.route('/deletar-reembolso/<int:id_reembolso>', methods=['DELETE'])
+def deletar_reembolso(id_reembolso):
+    reembolso_encontrado = db.session.execute(
+        db.select(Reembolso).where(Reembolso.id == id_reembolso)
+    ).scalar_one_or_none()
+
+    if reembolso_encontrado is None:
+        return jsonify({'erro': 'Reembolso não encontrado'}), 404
+    
+    db.session.delete(reembolso_encontrado)
+    db.session.commit()
+
+    return jsonify({'mensagem': 'Reembolso deletado com sucesso'}), 200
